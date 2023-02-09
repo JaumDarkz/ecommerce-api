@@ -14,13 +14,13 @@ router.get('/', (req, res, next) => {
           amount: result.length,
           products: result.map(prod => {
             return {
-              id_product: prod.id_produto,
+              id_product: prod.id_product,
               name: prod.name,
               price: prod.price,
               request: {
                 type: 'GET',
                 description: 'Return details of a specific product',
-                url: 'http://localhost:3000/produtos/' + prod.id_produto
+                url: 'http://localhost:3000/products/' + prod.id_product
               }
             }
           })
@@ -32,12 +32,12 @@ router.get('/', (req, res, next) => {
 });
 
 // Get data of an item
-router.get('/:id_produto', (req, res, next) => {
+router.get('/:id_product', (req, res, next) => {
   mysql.getConnection((error, conn) => {
     if (error) return res.status(500).send({ error: error })
     conn.query(
-      'SELECT * FROM products WHERE id_produto = ?',
-      [req.params.id_produto],
+      'SELECT * FROM products WHERE id_product = ?',
+      [req.params.id_product],
       (error, result, field) => {
         if (error) return res.status(500).send({ error: error })
 
@@ -49,13 +49,13 @@ router.get('/:id_produto', (req, res, next) => {
 
         const response = {
           product: {
-            id_product: result[0].id_produto,
+            id_product: result[0].id_product,
             name: result[0].name,
             price: result[0].price,
             request: {
               type: 'GET',
               description: 'Return all products',
-              url: 'http://localhost:3000/produtos'
+              url: 'http://localhost:3000/products'
             }
           }
         }
@@ -79,13 +79,13 @@ router.post('/', (req, res, next) => {
         const response = {
           message: 'Product inserted with success',
           productCreated: {
-            id_product: result.id_produto,
+            id_product: result.id_product,
             name: req.body.name,
             price: req.body.price,
             request: {
-              type: 'POST',
+              type: 'GET',
               description: 'Return all products',
-              url: 'http://localhost:3000/produtos'
+              url: 'http://localhost:3000/products'
             }
           }
         }
@@ -103,8 +103,8 @@ router.patch('/', (req, res, next) => {
       `UPDATE products
           SET name        = ?,
               price       = ?
-         WHERE id_produto = ?`,
-      [req.body.name, req.body.price, req.body.id_produto], 
+         WHERE id_product = ?`,
+      [req.body.name, req.body.price, req.body.id_product], 
       (error, result, field) => {
         conn.release();
 
@@ -113,13 +113,13 @@ router.patch('/', (req, res, next) => {
         const response = {
           message: 'Product updated with success',
           productUpdated: {
-            id_product: req.body.id_produto,
+            id_product: req.body.id_product,
             name: req.body.name,
             price: req.body.price,
             request: {
               type: 'GET',
               description: 'Return details of a specific product',
-              url: 'http://localhost:3000/produtos/' + req.body.id_produto
+              url: 'http://localhost:3000/products/' + req.body.id_product
             }
           }
         }
@@ -134,8 +134,8 @@ router.delete('/', (req, res, next) => {
   mysql.getConnection((error, conn) => {
     if (error) return res.status(500).send({ error: error })
     conn.query(
-      `DELETE FROM products WHERE id_produto = ?`,
-      [req.body.id_produto], 
+      `DELETE FROM products WHERE id_product = ?`,
+      [req.body.id_product], 
       (error, result, field) => {
         conn.release();
 
@@ -146,7 +146,7 @@ router.delete('/', (req, res, next) => {
           request: {
             type: 'POST',
             description: 'Insert a product',
-            url: 'http://localhost:3000/produtos',
+            url: 'http://localhost:3000/products',
             body: {
               name: 'String',
               price: 'Number'
